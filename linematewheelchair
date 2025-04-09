@@ -1,0 +1,82 @@
+#define ENA 9     // Speed control for left motor
+#define ENB 10    // Speed control for right motor
+#define IN1 2     // Left motor control pin 1
+#define IN2 3     // Left motor control pin 2
+#define IN3 4     // Right motor control pin 1
+#define IN4 5     // Right motor control pin 2
+
+#define sensorLeft A0     // Left IR sensor
+#define sensorRight A1    // Right IR sensor
+
+void setup() {
+  // Set motor pins as output
+  pinMode(ENA, OUTPUT);
+  pinMode(ENB, OUTPUT);
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
+
+  // Set sensor pins as input
+  pinMode(sensorLeft, INPUT);
+  pinMode(sensorRight, INPUT);
+}
+
+void loop() {
+  // Read sensor values
+  int leftValue = analogRead(sensorLeft);
+  int rightValue = analogRead(sensorRight);
+
+  // Assuming black line gives LOW values, white gives HIGH
+  bool onLineLeft = leftValue < 500;
+  bool onLineRight = rightValue < 500;
+
+  // Decide movement based on sensor readings
+  if (onLineLeft && onLineRight) {
+    moveForward();      // Go straight if both sensors are on the line
+  } else if (onLineLeft && !onLineRight) {
+    turnLeft();         // Turn left if only left sensor is on the line
+  } else if (!onLineLeft && onLineRight) {
+    turnRight();        // Turn right if only right sensor is on the line
+  } else {
+    stopMotors();       // Stop if no sensor detects the line
+  }
+}
+
+void moveForward() {
+  // Move both motors forward
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+  analogWrite(ENA, 150);  // Medium speed
+  analogWrite(ENB, 150);
+}
+
+void turnLeft() {
+  // Turn left by reversing left motor and moving right motor forward
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+  analogWrite(ENA, 100);  // Slower left motor
+  analogWrite(ENB, 150);
+}
+
+void turnRight() {
+  // Turn right by moving left motor forward and reversing right motor
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
+  analogWrite(ENA, 150);
+  analogWrite(ENB, 100);  // Slower right motor
+}
+
+void stopMotors() {
+  // Stop both motors
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, LOW);
+}
