@@ -58,4 +58,3 @@ We welcome contributions from the community! If you have ideas, improvements, or
 
 ---
 
-This description captures the essence of **Hemma Vision** and its potential to revolutionize accessibility in sports events. Feel free to adjust any specific details or add sections that better match your project’s vision.
