@@ -1,0 +1,88 @@
+// Define pins for touch sensors
+const int touchSensor1Pin = 2;  // Happy tone
+const int touchSensor2Pin = 3;  // Sad tone
+const int touchSensor3Pin = 4;  // Vibration motor
+const int touchSensor4Pin = 5;  // RGB module
+
+// Define pins for output devices
+const int vibrationMotorPin = 9; // Pin for the vibration motor
+const int buzzerPin = 10;        // Pin for the buzzer
+
+// RGB module pins
+const int redPin = 6;
+const int greenPin = 7;
+const int bluePin = 8;
+
+void setup() {
+  // Set touch sensor pins as inputs
+  pinMode(touchSensor1Pin, INPUT);
+  pinMode(touchSensor2Pin, INPUT);
+  pinMode(touchSensor3Pin, INPUT);
+  pinMode(touchSensor4Pin, INPUT);
+
+  // Set output device pins as outputs
+  pinMode(vibrationMotorPin, OUTPUT);
+  pinMode(buzzerPin, OUTPUT);
+
+  // Set RGB module pins as outputs
+  pinMode(redPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
+}
+
+void loop() {
+  // Read values from touch sensors
+  int touch1 = digitalRead(touchSensor1Pin);
+  int touch2 = digitalRead(touchSensor2Pin);
+  int touch3 = digitalRead(touchSensor3Pin);
+  int touch4 = digitalRead(touchSensor4Pin);
+
+  // Touch Sensor 1: Exciting music for happy
+  if (touch1 == HIGH) {
+    tone(buzzerPin, 1000); // Exciting tone (high pitch)
+    delay(200);
+    tone(buzzerPin, 1200); // Add a variation
+    delay(200);
+    noTone(buzzerPin);
+  }
+
+  // Touch Sensor 2: Sad tone
+  if (touch2 == HIGH) {
+    tone(buzzerPin, 500); // Low-pitched, melancholic tone
+    delay(500);
+    noTone(buzzerPin);
+  }
+
+  // Touch Sensor 3: Vibration Motor
+  if (touch3 == HIGH) {
+    digitalWrite(vibrationMotorPin, HIGH); // Activate vibration motor
+    delay(500);
+    digitalWrite(vibrationMotorPin, LOW);  // Deactivate vibration motor
+  }
+
+  // Touch Sensor 4: RGB module response
+  if (touch4 == HIGH) {
+    // Set RGB to red
+    digitalWrite(redPin, HIGH);
+    digitalWrite(greenPin, LOW);
+    digitalWrite(bluePin, LOW);
+    delay(500);
+
+    // Set RGB to green
+    digitalWrite(redPin, LOW);
+    digitalWrite(greenPin, HIGH);
+    digitalWrite(bluePin, LOW);
+    delay(500);
+
+    // Set RGB to blue
+    digitalWrite(redPin, LOW);
+    digitalWrite(greenPin, LOW);
+    digitalWrite(bluePin, HIGH);
+    delay(500);
+
+    // Turn off all RGB LEDs
+    digitalWrite(redPin, LOW);
+    digitalWrite(greenPin, LOW);
+    digitalWrite(bluePin, LOW);
+  }
+}
