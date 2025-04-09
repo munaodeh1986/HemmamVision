@@ -1,0 +1,84 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+#include <Adafruit_Fingerprint.h>
+#include <SoftwareSerial.h>
+
+// تعريف شاشة LCD
+LiquidCrystal_I2C lcd(0x27, 16, 2); // عنوان I2C للشاشة وعدد الأعمدة والصفوف
+
+// تعريف مستشعر البصمة
+SoftwareSerial mySerial(2, 3);
+Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
+
+int fingerprintID = 0;
+String IDname;
+
+void setup() {
+  // إعداد مستشعر البصمة
+  Serial.begin(9600);
+  finger.begin(57600);
+  
+  if (finger.verifyPassword()) {
+    Serial.println("Found fingerprint sensor!");
+  } else {
+    Serial.println("Did not find fingerprint sensor :(");
+    while (1) { delay(1); }
+  }
+
+  // إعداد شاشة LCD
+  lcd.begin(16, 2); // تحديد عدد الأعمدة والصفوف
+  lcd.backlight();
+  displayMainScreen();
+}
+
+void loop() {
+  displayMainScreen();
+  fingerprintID = getFingerprintIDez();
+  delay(50);
+  if (fingerprintID == 1 || fingerprintID == 3 || fingerprintID == 4 || fingerprintID == 5) {
+    IDname = "Sara";
+    displayUserGreeting(IDname);            
+  }  
+  else if (fingerprintID == 2) {
+    IDname = "Rui";  
+    displayUserGreeting(IDname);            
+  }
+}
+
+// إرجاع -1 إذا فشل، وإلا يعيد رقم المعرف
+int getFingerprintIDez() {
+  uint8_t p = finger.getImage();
+  if (p != FINGERPRINT_OK) return -1;
+
+  p = finger.image2Tz();
+  if (p != FINGERPRINT_OK) return -1;
+
+  p = finger.fingerFastSearch();
+  if (p != FINGERPRINT_OK) return -1;
+  
+  // تم العثور على تطابق!
+  Serial.print("Found ID #"); 
+  Serial.print(finger.fingerID); 
+  Serial.print(" with confidence of "); 
+  Serial.println(finger.confidence);
+  return finger.fingerID; 
+}
+
+void displayMainScreen() {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Waiting for");
+  lcd.setCursor(0, 1);
+  lcd.print("fingerprint...");
+  delay(2000);
+}
+
+void displayUserGreeting(String Name) {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Hello,");
+  lcd.setCursor(0, 1);
+  lcd.print(Name);
+  delay(5000);
+  fingerprintID = 0; 
+}
